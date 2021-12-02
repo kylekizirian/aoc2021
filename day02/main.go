@@ -10,11 +10,11 @@ import (
 
 func main() {
 	movements := readInput()
-	partA(movements)
-	partB(movements)
+	part1(movements)
+	part2(movements)
 }
 
-func partA(movements []string) {
+func part1(movements []string) {
 	var horiz, depth int
 
 	for _, movement := range movements {
@@ -33,10 +33,10 @@ func partA(movements []string) {
 		}
 	}
 
-	fmt.Println("part A: ", horiz*depth)
+	fmt.Println("part 1: ", horiz*depth)
 }
 
-func partB(movements []string) {
+func part2(movements []string) {
 	var aim, horiz, depth int
 
 	for _, movement := range movements {
@@ -55,7 +55,7 @@ func partB(movements []string) {
 			aim += amount
 		}
 	}
-	fmt.Println("part B: ", horiz*depth)
+	fmt.Println("part 2: ", horiz*depth)
 }
 
 func readInput() []string {

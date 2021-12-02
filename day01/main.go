@@ -9,11 +9,11 @@ import (
 
 func main() {
 	measurements := readInput()
-	partA(measurements)
-	partB(measurements)
+	part1(measurements)
+	part2(measurements)
 }
 
-func partA(measurements []int) {
+func part1(measurements []int) {
 	numIncreasing := 0
 	for i := 1; i < len(measurements); i++ {
 		if measurements[i] > measurements[i-1] {
@@ -21,10 +21,10 @@ func partA(measurements []int) {
 		}
 	}
 
-	fmt.Println("part A: ", numIncreasing)
+	fmt.Println("part 1: ", numIncreasing)
 }
 
-func partB(measurements []int) {
+func part2(measurements []int) {
 	numIncreasing := 0
 	firstThree := measurements[0] + measurements[1] + measurements[2]
 	secondThree := measurements[1] + measurements[2] + measurements[3]
@@ -40,7 +40,7 @@ func partB(measurements []int) {
 		}
 	}
 
-	fmt.Println("part b: ", numIncreasing)
+	fmt.Println("part 2: ", numIncreasing)
 }
 
 func readInput() []int {
