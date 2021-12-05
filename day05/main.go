@@ -15,10 +15,25 @@ func main() {
 }
 
 func part1(lines []Line) {
+	numOverlap := countOverlapPoints(lines, func(l Line) bool {
+		return l.IsHorizontal() || l.IsVertical()
+	})
+	fmt.Println("part 1: ", numOverlap)
+}
+
+func part2(lines []Line) {
+	numOverlap := countOverlapPoints(lines, func(l Line) bool {
+		return true
+	})
+	fmt.Println("part 2: ", numOverlap)
+}
+
+// countOverlapPoints returns number of points where at least 2 lines overlap
+func countOverlapPoints(lines []Line, cond func(Line) bool) int {
 	// maps [x][y] to num points
 	counter := make(map[int]map[int]int)
 	for _, line := range lines {
-		if !line.IsHorizontal() && !line.IsVertical() {
+		if !cond(line) {
 			continue
 		}
 
@@ -31,39 +46,16 @@ func part1(lines []Line) {
 		}
 	}
 
-	var atLeast2Overlap int
+	var overlap int
 	for _, xMap := range counter {
 		for _, count := range xMap {
 			if count >= 2 {
-				atLeast2Overlap++
+				overlap++
 			}
-		}
-	}
-	fmt.Println("part 1: ", atLeast2Overlap)
-}
-
-func part2(lines []Line) {
-	// maps [x][y] to num points
-	counter := make(map[int]map[int]int)
-	for _, line := range lines {
-		points := line.PointsOnLine()
-		for _, point := range points {
-			if counter[point[0]] == nil {
-				counter[point[0]] = make(map[int]int)
-			}
-			counter[point[0]][point[1]]++
 		}
 	}
 
-	var atLeast2Overlap int
-	for _, xMap := range counter {
-		for _, count := range xMap {
-			if count >= 2 {
-				atLeast2Overlap++
-			}
-		}
-	}
-	fmt.Println("part 2: ", atLeast2Overlap)
+	return overlap
 }
 
 func readInput() []Line {
