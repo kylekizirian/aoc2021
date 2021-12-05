@@ -11,6 +11,7 @@ import (
 func main() {
 	lines := readInput()
 	part1(lines)
+	part2(lines)
 }
 
 func part1(lines []Line) {
@@ -21,8 +22,7 @@ func part1(lines []Line) {
 			continue
 		}
 
-		points, err := line.PointsOnLine()
-		checkErr(err)
+		points := line.PointsOnLine()
 		for _, point := range points {
 			if counter[point[0]] == nil {
 				counter[point[0]] = make(map[int]int)
@@ -40,6 +40,30 @@ func part1(lines []Line) {
 		}
 	}
 	fmt.Println("part 1: ", atLeast2Overlap)
+}
+
+func part2(lines []Line) {
+	// maps [x][y] to num points
+	counter := make(map[int]map[int]int)
+	for _, line := range lines {
+		points := line.PointsOnLine()
+		for _, point := range points {
+			if counter[point[0]] == nil {
+				counter[point[0]] = make(map[int]int)
+			}
+			counter[point[0]][point[1]]++
+		}
+	}
+
+	var atLeast2Overlap int
+	for _, xMap := range counter {
+		for _, count := range xMap {
+			if count >= 2 {
+				atLeast2Overlap++
+			}
+		}
+	}
+	fmt.Println("part 2: ", atLeast2Overlap)
 }
 
 func readInput() []Line {
@@ -81,10 +105,7 @@ func (l Line) IsVertical() bool {
 	return l.x1 == l.x2
 }
 
-func (l Line) PointsOnLine() ([][]int, error) {
-	if !l.IsHorizontal() && !l.IsVertical() {
-		return nil, fmt.Errorf("line must be horiz or vert")
-	}
+func (l Line) PointsOnLine() [][]int {
 
 	if l.IsHorizontal() {
 		var points [][]int
@@ -95,18 +116,38 @@ func (l Line) PointsOnLine() ([][]int, error) {
 		for x := start; x <= end; x++ {
 			points = append(points, []int{x, l.y1})
 		}
-		return points, nil
+		return points
+	}
+
+	if l.IsVertical() {
+		var points [][]int
+		start, end := l.y1, l.y2
+		if l.y2 < start {
+			start, end = l.y2, l.y1
+		}
+		for y := start; y <= end; y++ {
+			points = append(points, []int{l.x1, y})
+		}
+		return points
 	}
 
 	var points [][]int
-	start, end := l.y1, l.y2
-	if l.y2 < start {
-		start, end = l.y2, l.y1
+	startX, startY := l.x1, l.y1
+	endX, endY := l.x2, l.y2
+	if l.x2 < startX {
+		startX, startY = l.x2, l.y2
+		endX, endY = l.x1, l.y1
 	}
-	for y := start; y <= end; y++ {
-		points = append(points, []int{l.x1, y})
+	y := startY
+	for x := startX; x <= endX; x++ {
+		points = append(points, []int{x, y})
+		if y < endY {
+			y++
+		} else {
+			y--
+		}
 	}
-	return points, nil
+	return points
 }
 
 func (l Line) String() string {
