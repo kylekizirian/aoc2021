@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"container/heap"
 	"fmt"
 	"os"
 	"strconv"
@@ -11,26 +10,28 @@ import (
 
 func main() {
 	timers := readInput()
-	part1(timers)
-}
 
-func part1(timers []int) {
-	timerHeap := make(IntHeap, len(timers))
-	for i, timer := range timers {
-		timerHeap[i] = timer
-	}
-	heap.Init(&timerHeap)
+	due := make([]int, 300)
 
-	for timerHeap[0] < 80 {
-		next := heap.Pop(&timerHeap).(int)
-		heap.Push(&timerHeap, next+7)
-		heap.Push(&timerHeap, next+9)
+	for _, timer := range timers {
+		due[timer]++
 	}
-	fmt.Println("part 1: ", len(timerHeap))
+
+	numFish := len(timers)
+	for i := 0; i < 256; i++ {
+		if i == 80 {
+			fmt.Println("part 1: ", numFish)
+		}
+
+		numFish += due[i]
+		due[i+7] += due[i]
+		due[i+9] += due[i]
+	}
+
+	fmt.Println("part 2: ", numFish)
 }
 
 func readInput() []int {
-
 	file, err := os.Open("./input.txt")
 	checkErr(err)
 
@@ -45,25 +46,6 @@ func readInput() []int {
 	}
 
 	return timers
-}
-
-// An IntHeap is a min-heap of ints.
-type IntHeap []int
-
-func (h IntHeap) Len() int           { return len(h) }
-func (h IntHeap) Less(i, j int) bool { return h[i] < h[j] }
-func (h IntHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
-
-func (h *IntHeap) Push(x interface{}) {
-	*h = append(*h, x.(int))
-}
-
-func (h *IntHeap) Pop() interface{} {
-	old := *h
-	n := len(old)
-	x := old[n-1]
-	*h = old[0 : n-1]
-	return x
 }
 
 func strToInt(num string) int {
