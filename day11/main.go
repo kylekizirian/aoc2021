@@ -10,7 +10,8 @@ import (
 
 func main() {
 	grid := readInput()
-	part1(grid)
+	part1(copy2d(grid))
+	part2(copy2d(grid))
 }
 
 func part1(grid Grid) {
@@ -19,6 +20,15 @@ func part1(grid Grid) {
 		numFlashed += round(grid)
 	}
 	fmt.Println("part 1: ", numFlashed)
+}
+
+func part2(grid Grid) {
+	allFlash := len(grid) * len(grid[0])
+	i := 1
+	for round(grid) < allFlash {
+		i++
+	}
+	fmt.Println("part 2: ", i)
 }
 
 func round(grid Grid) int {
@@ -124,6 +134,15 @@ func strToInt(s string) int {
 	n, err := strconv.Atoi(s)
 	checkErr(err)
 	return n
+}
+
+func copy2d(grid Grid) Grid {
+	dup := make(Grid, len(grid))
+	for i := range grid {
+		dup[i] = make([]int, len(grid[i]))
+		copy(dup[i], grid[i])
+	}
+	return dup
 }
 
 func checkErr(err error) {
