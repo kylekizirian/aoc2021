@@ -8,28 +8,46 @@ import (
 	"unicode"
 )
 
+var startNode = Node{"start", false}
+
 func main() {
 	nodeMap := readInput()
 	part1(nodeMap)
+	part2(nodeMap)
 }
 
 func part1(nodeMap map[Node][]Node) {
-	fmt.Println("part 1: ", pathsToEnd(Node{"start", false}, nil, nodeMap))
+	visitNext := func(next Node, visited []Node) bool {
+		return next.big || !contains(visited, next)
+	}
+	isValid := func(visited []Node) bool { return true }
+	numPaths := pathsToEnd(startNode, nil, nodeMap, visitNext, isValid)
+	fmt.Println("part 1: ", numPaths)
 }
 
-func pathsToEnd(curNode Node, visited []Node, nodeMap map[Node][]Node) int {
+func part2(nodeMap map[Node][]Node) {
+	visitNext := func(next Node, visited []Node) bool {
+		return next.big || !contains(visited, next) || !smallCaveVisitedTwice(visited)
+	}
+	numPaths := pathsToEnd(startNode, nil, nodeMap, visitNext, validPathPart2)
+	fmt.Println("part 2: ", numPaths)
+}
+
+func pathsToEnd(curNode Node, visited []Node, nodeMap map[Node][]Node, visitNext func(Node, []Node) bool, isValidPath func([]Node) bool) int {
 	if curNode.id == "end" {
-		return 1
+		if isValidPath(visited) {
+			return 1
+		}
+		return 0
 	}
 
 	paths := 0
 	for _, next := range nodeMap[curNode] {
-		// check if already visited
-		if next.big || !contains(visited, next) {
+		if visitNext(next, visited) {
 			visitedCopy := make([]Node, len(visited))
 			copy(visitedCopy, visited)
 			visitedCopy = append(visitedCopy, curNode)
-			paths += pathsToEnd(next, visitedCopy, nodeMap)
+			paths += pathsToEnd(next, visitedCopy, nodeMap, visitNext, isValidPath)
 		}
 	}
 	return paths
@@ -47,6 +65,37 @@ func contains(nodes []Node, node Node) bool {
 		}
 	}
 	return false
+}
+
+func smallCaveVisitedTwice(nodes []Node) bool {
+	// check if we visit any small caves twice
+	small := make(map[Node]bool)
+	for _, node := range nodes {
+		if !node.big {
+			if small[node] {
+				return true
+			}
+			small[node] = true
+		}
+	}
+	return false
+}
+
+func validPathPart2(path []Node) bool {
+	visitedTwice := false
+	small := make(map[Node]bool)
+	for _, node := range path {
+		if !node.big {
+			if small[node] {
+				if visitedTwice {
+					return false
+				}
+				visitedTwice = true
+			}
+			small[node] = true
+		}
+	}
+	return true
 }
 
 func (n Node) String() string {
