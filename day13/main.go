@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -11,6 +12,7 @@ import (
 func main() {
 	coords, folds := readInput()
 	part1(coords, folds)
+	part2(coords, folds)
 }
 
 func part1(coords CoordSet, folds []Fold) {
@@ -20,6 +22,42 @@ func part1(coords CoordSet, folds []Fold) {
 		foldedCoords.Add(FoldCoord(coord, firstFold))
 	}
 	fmt.Println("part 1: ", len(foldedCoords))
+}
+
+func part2(coords CoordSet, folds []Fold) {
+	for _, fold := range folds {
+		foldedCoords := make(CoordSet)
+		for coord := range coords {
+			foldedCoords.Add(FoldCoord(coord, fold))
+		}
+		coords = foldedCoords
+	}
+
+	maxX, maxY := math.MinInt, math.MinInt
+	for coord := range coords {
+		if coord.X > maxX {
+			maxX = coord.X
+		}
+		if coord.Y > maxY {
+			maxY = coord.Y
+		}
+	}
+	grid := make([][]string, maxY+1)
+	for i := range grid {
+		grid[i] = make([]string, maxX+1)
+		for j := range grid[i] {
+			grid[i][j] = " "
+		}
+	}
+
+	for coord := range coords {
+		grid[coord.Y][coord.X] = "*"
+	}
+
+	fmt.Println("part2:")
+	for _, row := range grid {
+		fmt.Println(row)
+	}
 }
 
 type Fold struct {
