@@ -70,24 +70,6 @@ func part2(template string, rules map[string]string) {
 	fmt.Println("part2: ", max-min)
 }
 
-type Node struct {
-	Char rune
-	Next *Node
-}
-
-func (n *Node) String() string {
-	if n == nil {
-		return ""
-	}
-
-	cur, str := n, ""
-	for cur.Next != nil {
-		str += string(n.Char) + "->"
-		cur = n.Next
-	}
-	return str + string(n.Char)
-}
-
 // minAndMax returns the minimum and maximum values in ctr map
 func minAndMax(ctr map[rune]int) (int, int) {
 	min, max := math.MaxInt, math.MinInt
